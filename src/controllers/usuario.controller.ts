@@ -350,7 +350,62 @@ export class UsuarioController {
     return new HttpErrors[401]("Credenciales incorrectas.");
   }
 
+  // create an endpoint to send pqrs to an specific email, where the inputs will be users email, subject and message. but without the schemaref because i dont have a model of pqrs
+  @post('/enviar-pqrs')
+  @response(200, {
+    description: 'Enviar un mensaje de PQRS a un correo específico',
+  })
+  async EnviarPqrs(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              correo: {type: 'string'},
+              asunto: {type: 'string'},
+              mensaje: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    datos: {
+      correo: string;
+      asunto: string;
+      mensaje: string;
+    },
+  ): Promise<object> {
+    // Buscar el usuario por correo
+    let usuario = await this.usuarioRepository.findOne({
+      where: {
+        correo: datos.correo,
+      },
+    });
 
+    // Verificar si se encontró el usuario
+    if (usuario) {
+      // Preparar datos para enviar correo
+      let datosCorreo = {
+        correoDestino: 'nicolas.1701812174@ucaldas.edu.co',
+        nombreDestino: 'Administrador',
+        contenidoCorreo: `El usuario ${usuario.primerNombre} ${usuario.primerApellido} con correo ${usuario.correo} ha enviado el siguiente mensaje: ${datos.mensaje}`,
+        asuntoCorreo: datos.asunto,
+      };
+
+      // URL para el servicio de notificaciones (ajústalo si es necesario)
+      let url = ConfiguracionNotificaciones.urlNotificaciones2fa;
+
+      // Enviar notificación
+      await this.servicioNotificaciones.EnviarNotificacion(datosCorreo, url);
+
+      // Respuesta con el usuario encontrado
+      return usuario;
+    }
+
+    // Si no se encontró el usuario, devolver un error
+    throw new HttpErrors[401]('Credenciales incorrectas.');
+  }
 
   @post('/validar-permisos')
   @response(200, {

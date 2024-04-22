@@ -6,6 +6,7 @@ export namespace ConfiguracionSeguridad {
   export const editarAccion = "editar";
   export const eliminarAccion = "eliminar";
   export const descargarAccion = "descargar";
-  export const mongodbConnectionString = process.env.CONNECTION_STRING_MONGODB;
+  //export const mongodbConnectionString = process.env.CONNECTION_STRING_MONGODB;
+  export const mongodbConnectionString = "mongodb+srv://NicolasJO:Nico3210@cluster0.fgyofag.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
   export const rolUsuarioPublico = "6447fb780692cf465038ff62";
 }
